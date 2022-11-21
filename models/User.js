@@ -1,5 +1,45 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, version } = require('mongoose');
 
 const userSchema = new Schema({
-    
+    name: {
+        type: String,
+        required: [true, "El campo name es obligatorio"]
+    },
+    email: {
+        type: String,
+        required: [true, "El campo email es obligatorio"],
+        unique: true,
+        trim: true,
+        match: [
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            "Email no valido"
+        ] 
+    },
+    password: {
+        type: String,
+        required: [true, "El campo password es obligatorio"],
+        minLength: [6, "Password minima de 6 caracteres"],
+        maxLength: [23, "Password maximo de 23 caracteres"],
+    },
+    photo: {
+        type: String,
+        required: [true, "El campo photo es obligatorio"],
+        default: ""
+    },
+    phone: {
+        type: String,
+        default: "+569 "
+    },
+    bio: {
+        type: String,
+        maxLength: [250, "Bio maximo de 250 caracteres"],
+        default: "bio",
+    }
+},{
+    timestamps: true
 });
+
+
+const User = model("User", userSchema);
+
+module.exports = User;
