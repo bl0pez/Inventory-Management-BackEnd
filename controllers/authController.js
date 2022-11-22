@@ -95,8 +95,32 @@ const login = async (req, res, next) => {
 }
 
 
+const logout = async (req, res, next) => {
+    try {
+        res.cookie('token', '', {
+            path: '/',
+            httpOnly: true,
+            expires: new Date(0),
+            sameSite: 'none',
+            secure: true
+        });
+
+        res.status(200).json({
+            ok: true,
+            message: 'Cierre de sesion exitoso'
+        });
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            message: 'Please contact the administrator'
+        });
+    }
+}
+
+
 
 module.exports = {
     register,
     login,
+    logout,
 }

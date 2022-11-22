@@ -22,6 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('DB connected'))
     .catch((err) => console.log(err));
 
+app.use("/api/auth", require("./routes/authRoute"));
 app.use("/api/users", require("./routes/userRoute"));
 
 
