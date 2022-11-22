@@ -11,6 +11,13 @@ const registerValidation = [
     errorHandler
 ];
 
+const loginValidation = [
+    body('email', 'Campo email es obligatorio').isEmail(),
+    body('password', 'Por favor ingrese una contraseña de al menos 6 caracteres').isLength({min: 6}),
+    errorHandler
+];
+
 module.exports = {
     registerValidation,
+    loginValidation,
 }
