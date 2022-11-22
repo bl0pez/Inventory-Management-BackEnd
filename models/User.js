@@ -1,4 +1,5 @@
 const { Schema, model, version } = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new Schema({
     name: {
@@ -24,7 +25,7 @@ const userSchema = new Schema({
     photo: {
         type: String,
         required: [true, "El campo photo es obligatorio"],
-        default: ""
+        default: "asdasdadasdadasd"
     },
     phone: {
         type: String,
@@ -39,6 +40,17 @@ const userSchema = new Schema({
     timestamps: true
 });
 
+//Encriptar password antes de guardar
+userSchema.pre("save", async function(next) {
+
+    //Verificar si el password ya esta encriptado
+    if(!this.isModified("password")) return next();
+
+    //Encriptar el password
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+
+});
 
 const User = model("User", userSchema);
 
