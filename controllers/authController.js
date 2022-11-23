@@ -1,5 +1,5 @@
-const generateJWT = require("../helpers/generateJWT");
 const User = require("../models/User");
+const {generateJWT, verifyJWT} = require("../helpers/generateJWT");
 
 const register = async (req, res, next) => {
 
@@ -72,9 +72,10 @@ const login = async (req, res, next) => {
         res.cookie('token', token, {
             path: '/',
             httpOnly: true,
-            expires: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours
+            //Expires in 2 hours
+            expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
             sameSite: 'none',
-            secure: true
+            secure: false
         });
 
         res.status(200).json({
@@ -94,6 +95,32 @@ const login = async (req, res, next) => {
 
 }
 
+//verificamos si el usuario esta logueado
+const loginStatus = async (req, res) => {
+
+    const token = req.cookies.token;
+
+    if(!token){
+        return res.json({
+            ok: false,
+            msg: 'No token'
+        });
+    }
+
+    if(!verifyJWT(token)){
+        return res.json({
+            ok: false,
+            msg: 'Token valido'
+        });
+    }
+
+    res.json({
+        ok: true,
+        msg: 'Token valido'
+    });
+
+}
+
 
 const logout = async (req, res, next) => {
     try {
@@ -102,7 +129,7 @@ const logout = async (req, res, next) => {
             httpOnly: true,
             expires: new Date(0),
             sameSite: 'none',
-            secure: true
+            secure: false
         });
 
         res.status(200).json({
@@ -122,5 +149,6 @@ const logout = async (req, res, next) => {
 module.exports = {
     register,
     login,
+    loginStatus,
     logout,
 }
