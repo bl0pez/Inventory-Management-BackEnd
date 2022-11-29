@@ -52,7 +52,6 @@ const login = async (req, res, next) => {
 
         if (!user) {
             return res.status(400).json({
-                ok: false,
                 message: 'Email o password incorrectos'
             });
         }
@@ -61,7 +60,6 @@ const login = async (req, res, next) => {
 
         if (!passwordMatch) {
             return res.status(400).json({
-                ok: false,
                 message: 'Email o password incorrectos'
             });
         }
@@ -75,11 +73,10 @@ const login = async (req, res, next) => {
             //Expires in 2 hours
             expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
             sameSite: 'none',
-            secure: false
+            secure: true
         });
 
         res.status(200).json({
-            ok: true,
             user,
             token,
         });
@@ -101,22 +98,26 @@ const loginStatus = async (req, res) => {
     const token = req.cookies.token;
 
     if(!token){
-        return res.json({
-            ok: false,
-            msg: 'No token'
+        return res.status(400).json({
+            message: 'Sesion no valida'
         });
     }
 
-    if(!verifyJWT(token)){
-        return res.json({
-            ok: false,
-            msg: 'Token valido'
+    const validateToken = verifyJWT(token);
+
+    console.log(validateToken);
+
+    if(!validateToken){
+        return res.status(400).json({
+            message: 'Sesion no valida'
         });
     }
+
+    const user = await User({_id: validateToken._id});
 
     res.json({
-        ok: true,
-        msg: 'Token valido'
+        user,
+        token
     });
 
 }
@@ -124,13 +125,9 @@ const loginStatus = async (req, res) => {
 
 const logout = async (req, res, next) => {
     try {
-        res.cookie('token', '', {
-            path: '/',
-            httpOnly: true,
-            expires: new Date(0),
-            sameSite: 'none',
-            secure: false
-        });
+
+        //Eliminamos la cookie
+        res.clearCookie('token');
 
         res.status(200).json({
             ok: true,

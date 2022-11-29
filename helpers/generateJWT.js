@@ -21,8 +21,8 @@ const generateJWT = (_id) => {
  */
 const verifyJWT = (token) => {
     
-        const secret = process.env.JWT_SECRET;
     
+    const secret = process.env.JWT_SECRET;
         return jwt.verify(token, secret);
     
 }
